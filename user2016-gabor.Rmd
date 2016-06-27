@@ -1,0 +1,219 @@
+---
+title: "Tools for Robust R packages"
+author: "Gábor Csárdi"
+email: "gcsardi@mango-solutions.com, https://github.com/mangothecat"
+maketitle: true
+output:
+  rmdshower::shower_presentation:
+    self_contained: false
+    theme: mango
+    keep_md: true
+    css: style.css
+    ratio: 16x10
+---
+
+## Outline { .nonum }
+
+<style type="text/css">
+@import url("https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css");
+@import url("https://cdn.rawgit.com/gaborcsardi/r-font/master/rlogo.css");
+</style>
+
+<img src="mango.png" class="cover" style="width:40%;margin-left:25%;margin-top:-20px;">
+
+### 1. Motivation: high quality R packages
+
+### 2. Existing tools: <br> `R CMD check`, `covr`, `lintr`
+
+### 3. The `goodpractice` package
+
+### 4. Cylomatic complexity: `cyclocomp`
+
+### 5. XML parse data and linting: `xmlparsedata`
+
+### 6. Function map: `functionMap`
+
+## Motivation
+
+<div class="double">
+<p class="double-flow">
+
+  <span class="icon-rlogo-alt" aria-hidden="true"></span>&nbsp;&nbsp;
+  High quality R packages 
+
+  <span class="fa fa-gift fa-fw" aria-hidden="true"></span>&nbsp;&nbsp;
+  Package building advice
+
+  <span class="fa fa-wrench fa-fw" aria-hidden="true"></span>&nbsp;&nbsp;
+  Custom rule sets
+
+  <span class="fa fa-cog fa-spin fa-fw" aria-hidden="true"></span>&nbsp;&nbsp;
+  Use in a CI
+
+</p><p class="double-flow">
+
+  <span class="fa fa-file-code-o fa-fw" aria-hidden="true"></span>&nbsp;&nbsp;
+  Code quality
+
+  <span class="fa fa-check fa-fw" aria-hidden="true"></span>&nbsp;&nbsp;
+  Good practices
+
+  <span class="fa fa-area-chart fa-fw" aria-hidden="true"></span>&nbsp;&nbsp;
+  Test coverage
+
+  <span class="fa fa-file-text-o fa-fw" aria-hidden="true"></span>&nbsp;&nbsp;
+  Documentation quality
+
+</p>
+</div>
+
+# Existing Tools
+
+# `R CMD check` { style="font-size: 70%" }
+
+## { .fullpage }
+<img src="rcmdcheck.png" class="cover">
+
+# `jimhester/covr` { style="font-size: 70%" }
+
+## { .fullpage }
+<img src="covr.png" class="cover">
+
+# `jimhester/lintr` { style="font-size: 70%" }
+
+## { .fullpage }
+<img src="http://i.imgur.com/3pua2yz.gif" class="cover">
+
+# `goodpractice` { style="font-size: 70%" }
+
+## GP Checks
+
+<div class="double">
+<p class="double-flow">
+
+  <span class="fa fa-check fa-fw" aria-hidden="true"></span>&nbsp;&nbsp;
+  `R CMD check`
+
+  <span class="fa fa-check fa-fw" aria-hidden="true"></span>&nbsp;&nbsp;
+  Test coverage (via `covr`)
+
+  <span class="fa fa-check fa-fw" aria-hidden="true"></span>&nbsp;&nbsp;
+  Anti-patterns `1:length(x)`
+
+  <span class="fa fa-check fa-fw" aria-hidden="true"></span>&nbsp;&nbsp;
+  Code complexity
+
+</p><p class="double-flow">
+
+  <span class="fa fa-check fa-fw" aria-hidden="true"></span>&nbsp;&nbsp;
+  Code quality
+
+  <span class="fa fa-check fa-fw" aria-hidden="true"></span>&nbsp;&nbsp;
+  Package dependencies
+
+  <span class="fa fa-check fa-fw" aria-hidden="true"></span>&nbsp;&nbsp;
+  Documentation
+
+  <span class="fa fa-check fa-fw" aria-hidden="true"></span>&nbsp;&nbsp;
+  Code style (via `lintr`)
+
+## { .fullpage }
+<img src="gp.png" class="cover">
+
+## { .fullpage }
+<img src="gp2.png" class="cover">
+
+## { .fullpage }
+<img src="gp3.png" class="cover">
+
+# `cyclocomp` { style="font-size: 70%" }
+
+## Cyclomatic complexity
+
+<img src="https://upload.wikimedia.org/wikipedia/commons/2/2b/Control_flow_graph_of_function_with_loop_and_an_if_statement_without_loop_back.svg" class="cover" style="width:35%;margin-left:25%;margin-top:0px;">
+
+1. By Thomas J. McCabe, Sr. in 1976
+1. Control flow graphs
+1. Number of linearly independent paths
+1. Limit complexity during development
+1. Calibrate/estimate number of tests
+
+# `xmlparsedata` { style="font-size: 70%" }
+
+## Linting: labeled subgraph isomorphisms
+
+Example: search for `1:nrow(<expression>)`
+
+```
+<expr>
+  +-- <expr>
+    +-- NUM_CONST: 1
+  +-- ':'
+  +-- <expr>
+    +-- <expr>
+      +-- SYMBOL_FUNCTION_CALL nrow
+    +-- '('
+    +-- <expr>
+    +-- ')'
+```	
+
+## Easy with `XPath`
+
+Example: search for `1:nrow(<expr>)`
+
+```
+//expr
+  [expr[NUM_CONST[text()='1']]]
+  [OP-COLON]
+  [expr[expr[SYMBOL_FUNCTION_CALL[text()='nrow']]]]
+```
+
+Just convert the R parse tree to XML!
+
+# `functionMap` { style="font-size: 70%" }
+
+## { .fullpage }
+<img src="functionmap1.png" class="cover">
+
+## { .fullpage }
+<img src="functionmap2.png" class="cover">
+
+## { .fullpage }
+
+<div style="margin-top:-100px;"></div>
+
+```json
+{
+  "package": "simplegraph",
+  "exports": ["adjacent_vertices", "bfs", "degree" ],
+  "functions": [
+    {
+      "ID": "is_simplegraph",
+      "file": "R/assertions.R",
+      "line": 12,
+      "col1": 19,
+      "col2": 26
+    }
+  ],
+  "calls": [
+    {
+      "from": "is_simplegraph",
+      "to": "methods::is",
+      "file": "R/assertions.R",
+      "line": 13,
+      "col1": 3,
+      "col2": 4
+    }	
+  ]
+}
+```
+
+# But wait!
+
+## { .fullpage }
+<img src="github1.png" class="cover">
+
+## { .fullpage }
+<img src="github2.png" class="cover">
+
+# Questions?
