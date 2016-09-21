@@ -67,6 +67,10 @@ output:
 </p>
 </div>
 
+## { .fullpage }
+
+<img src="wtfm.jpg" class="cover">
+
 # Existing Tools
 
 # `R CMD check` { style="font-size: 70%" }
@@ -82,7 +86,7 @@ output:
 # `jimhester/lintr` { style="font-size: 70%" }
 
 ## { .fullpage }
-<img src="http://i.imgur.com/3pua2yz.gif" class="cover">
+<img src="3pua2yz.gif" class="cover">
 
 # `goodpractice` { style="font-size: 70%" }
 
